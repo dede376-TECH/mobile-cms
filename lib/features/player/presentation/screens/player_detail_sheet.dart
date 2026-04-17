@@ -69,7 +69,7 @@ class PlayerDetailSheet extends ConsumerWidget {
                       context,
                       Icons.update,
                       'Dernière vue',
-                      player.lastSeen!.toLocal().toString().split('.').first,
+                      player.lastSeen.toLocal().toString().split('.').first,
                     ),
                     const Divider(),
                     _buildActions(context, ref, player, schedules),

@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/status.dart' as status;
 import '../features/app_core_ui/domain/interfaces/icommunication_interfaces.dart';
-import '../features/app_core_ui/domain/models/app_models.dart';
 
 /// Service WebSocket pour le statut temps réel des players
 /// Remplace le polling HTTP toutes les 30 secondes par une connexion persistante
@@ -39,28 +38,34 @@ class WebSocketStatusService implements IRealtimeStatusListener {
         (message) => _handleMessage(message, player),
         onError: (error) {
           _isConnected = false;
-          _statusController.add(PlayerStatusUpdate(
-            playerId: player.id,
-            status: PlayerStatus.offline,
-            timestamp: DateTime.now(),
-          ));
+          _statusController.add(
+            PlayerStatusUpdate(
+              playerId: player.id,
+              status: PlayerStatus.offline,
+              timestamp: DateTime.now(),
+            ),
+          );
         },
         onDone: () {
           _isConnected = false;
-          _statusController.add(PlayerStatusUpdate(
-            playerId: player.id,
-            status: PlayerStatus.offline,
-            timestamp: DateTime.now(),
-          ));
+          _statusController.add(
+            PlayerStatusUpdate(
+              playerId: player.id,
+              status: PlayerStatus.offline,
+              timestamp: DateTime.now(),
+            ),
+          );
         },
       );
 
       // Envoie un message d'identification
-      _channel!.sink.add(jsonEncode({
-        'type': 'register',
-        'role': 'controller',
-        'timestamp': DateTime.now().toIso8601String(),
-      }));
+      _channel!.sink.add(
+        jsonEncode({
+          'type': 'register',
+          'role': 'controller',
+          'timestamp': DateTime.now().toIso8601String(),
+        }),
+      );
     } catch (e) {
       _isConnected = false;
       // Fallback sur HTTP si WebSocket échoue
@@ -74,29 +79,35 @@ class WebSocketStatusService implements IRealtimeStatusListener {
 
       switch (msgType) {
         case 'status':
-          _statusController.add(PlayerStatusUpdate(
-            playerId: player.id,
-            status: PlayerStatus.values.byName(data['status'] as String),
-            currentMedia: data['currentMedia'] as String?,
-            timestamp: DateTime.now(),
-          ));
+          _statusController.add(
+            PlayerStatusUpdate(
+              playerId: player.id,
+              status: PlayerStatus.values.byName(data['status'] as String),
+              currentMedia: data['currentMedia'] as String?,
+              timestamp: DateTime.now(),
+            ),
+          );
           break;
 
         case 'heartbeat':
           // Répond au heartbeat pour garder la connexion active
-          _channel?.sink.add(jsonEncode({
-            'type': 'heartbeat_ack',
-            'timestamp': DateTime.now().toIso8601String(),
-          }));
+          _channel?.sink.add(
+            jsonEncode({
+              'type': 'heartbeat_ack',
+              'timestamp': DateTime.now().toIso8601String(),
+            }),
+          );
           break;
 
         case 'error':
-          _statusController.add(PlayerStatusUpdate(
-            playerId: player.id,
-            status: PlayerStatus.error,
-            currentMedia: data['message'] as String?,
-            timestamp: DateTime.now(),
-          ));
+          _statusController.add(
+            PlayerStatusUpdate(
+              playerId: player.id,
+              status: PlayerStatus.error,
+              currentMedia: data['message'] as String?,
+              timestamp: DateTime.now(),
+            ),
+          );
           break;
       }
     } catch (e) {
@@ -108,31 +119,35 @@ class WebSocketStatusService implements IRealtimeStatusListener {
   Future<void> sendCommand(String command, Map<String, dynamic> payload) async {
     if (!isConnected || _channel == null) return;
 
-    _channel!.sink.add(jsonEncode({
-      'type': 'command',
-      'command': command,
-      'payload': payload,
-      'timestamp': DateTime.now().toIso8601String(),
-    }));
+    _channel!.sink.add(
+      jsonEncode({
+        'type': 'command',
+        'command': command,
+        'payload': payload,
+        'timestamp': DateTime.now().toIso8601String(),
+      }),
+    );
   }
 
   @override
   Future<void> disconnect() async {
     _isConnected = false;
-    
+
     if (_channel != null) {
       try {
-        _channel!.sink.add(jsonEncode({
-          'type': 'unregister',
-          'timestamp': DateTime.now().toIso8601String(),
-        }));
+        _channel!.sink.add(
+          jsonEncode({
+            'type': 'unregister',
+            'timestamp': DateTime.now().toIso8601String(),
+          }),
+        );
         await _channel!.sink.close(status.normalClosure);
       } catch (e) {
         // Ignore les erreurs de fermeture
       }
       _channel = null;
     }
-    
+
     _connectedPlayer = null;
   }
 

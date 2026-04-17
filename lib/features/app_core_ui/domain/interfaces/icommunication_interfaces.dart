@@ -1,6 +1,3 @@
-import '../../../player/domain/models/player.dart';
-import '../../../schedule/domain/models/schedule.dart';
-import '../../../media/domain/models/media_item.dart';
 import '../models/app_models.dart';
 export '../models/app_models.dart';
 

@@ -2,10 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app_core_ui/domain/interfaces/icommunication_interfaces.dart';
-import '../../../app_core_ui/domain/models/app_models.dart';
-import '../../domain/models/player.dart';
 import '../../domain/interfaces/iplayer_repository.dart';
-import '../../../schedule/domain/models/schedule.dart';
 import '../../../../core/di/injection_container.dart';
 
 /// Provider pour la gestion des players

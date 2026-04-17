@@ -1,9 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app_core_ui/domain/interfaces/app_interfaces.dart';
-import '../../domain/models/schedule.dart';
 import '../../../../core/di/injection_container.dart';
-import '../../../app_core_ui/domain/interfaces/icommunication_interfaces.dart';
 
 /// Provider pour la gestion des planifications
 /// Respecte SRP : ne gère QUE les schedules

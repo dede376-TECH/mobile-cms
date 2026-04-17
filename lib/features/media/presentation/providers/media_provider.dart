@@ -128,7 +128,7 @@ class MediaProvider extends ChangeNotifier {
         throw Exception('Fichier média introuvable: ${media.filePath}');
       }
       final bytes = await file.readAsBytes();
-      final success = await _mediaSender!.sendMedia(player, media, bytes);
+      final success = await _mediaSender.sendMedia(player, media, bytes);
 
       if (!success) {
         throw Exception('Échec de l\'envoi du média au player.');

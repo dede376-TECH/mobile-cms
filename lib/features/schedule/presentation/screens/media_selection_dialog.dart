@@ -187,7 +187,7 @@ class _MediaSettingsDialogState extends State<_MediaSettingsDialog> {
           const SizedBox(height: 16),
           DropdownButtonFormField<TransitionType>(
             decoration: const InputDecoration(labelText: 'Transition'),
-            value: _transition,
+            initialValue: _transition,
             items: TransitionType.values
                 .map(
                   (t) => DropdownMenuItem(

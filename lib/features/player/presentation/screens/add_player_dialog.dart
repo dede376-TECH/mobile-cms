@@ -55,8 +55,9 @@ class _AddPlayerDialogState extends ConsumerState<AddPlayerDialog> {
                 ),
                 keyboardType: TextInputType.number,
                 validator: (v) {
-                  if (v == null || v.isEmpty)
+                  if (v == null || v.isEmpty) {
                     return 'Veuillez entrer une adresse IP';
+                  }
                   if (!RegExp(r'^(\d{1,3}\.){3}\d{1,3}$').hasMatch(v)) {
                     return 'Format d\'IP invalide';
                   }
