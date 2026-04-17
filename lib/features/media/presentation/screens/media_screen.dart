@@ -28,39 +28,36 @@ class MediaScreen extends ConsumerWidget {
       body: mediaState.isLoading
           ? const Center(child: CircularProgressIndicator())
           : mediaState.error != null
-              ? Center(child: Text('Erreur: ${mediaState.error}'))
-              : mediaState.mediaItems.isEmpty
-                  ? const Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.perm_media, size: 64, color: Colors.grey),
-                          SizedBox(height: 16),
-                          Text(
-                            'Aucun média\nAjoutez des images ou vidéos',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 16, color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                    )
-                  : GridView.builder(
-                      padding: const EdgeInsets.all(16),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: 0.8,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
-                      ),
-                      itemCount: mediaState.mediaItems.length,
-                      itemBuilder: (context, index) {
-                        final media = mediaState.mediaItems[index];
-                        return _MediaCard(
-                          media: media,
-                          players: playersState.players,
-                        );
-                      },
-                    ),
+          ? Center(child: Text('Erreur: ${mediaState.error}'))
+          : mediaState.mediaItems.isEmpty
+          ? const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.perm_media, size: 64, color: Colors.grey),
+                  SizedBox(height: 16),
+                  Text(
+                    'Aucun média\nAjoutez des images ou vidéos',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                  ),
+                ],
+              ),
+            )
+          : GridView.builder(
+              padding: const EdgeInsets.all(8),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 4,
+                childAspectRatio: 0.9,
+                crossAxisSpacing: 4,
+                mainAxisSpacing: 4,
+              ),
+              itemCount: mediaState.mediaItems.length,
+              itemBuilder: (context, index) {
+                final media = mediaState.mediaItems[index];
+                return _MediaCard(media: media, players: playersState.players);
+              },
+            ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showUploadOptions(context, ref),
         icon: const Icon(Icons.add),
@@ -107,94 +104,12 @@ class MediaScreen extends ConsumerWidget {
     );
   }
 
-  void _showAddMediaDialog(BuildContext context, WidgetRef ref, MediaType type) {
-    final nameController = TextEditingController();
-    var duration = 10;
-    var transition = TransitionType.fade;
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Ajouter ${type == MediaType.image ? 'une image' : 'une vidéo'}'),
-        content: StatefulBuilder(
-          builder: (context, setState) {
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  controller: nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Nom',
-                    hintText: 'ex: Promotion été',
-                  ),
-                ),
-                const SizedBox(height: 16),
-                if (type == MediaType.image)
-                  TextFormField(
-                    initialValue: duration.toString(),
-                    decoration: const InputDecoration(
-                      labelText: 'Durée d\'affichage (secondes)',
-                    ),
-                    keyboardType: TextInputType.number,
-                    onChanged: (value) {
-                      duration = int.tryParse(value) ?? 10;
-                    },
-                  ),
-                if (type == MediaType.image) const SizedBox(height: 16),
-                DropdownButtonFormField<TransitionType>(
-                  decoration: const InputDecoration(
-                    labelText: 'Transition',
-                  ),
-                  value: transition,
-                  items: TransitionType.values.map((t) {
-                    return DropdownMenuItem(
-                      value: t,
-                      child: Text(_getTransitionLabel(t)),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    if (value != null) {
-                      setState(() {
-                        transition = value;
-                      });
-                    }
-                  },
-                ),
-              ],
-            );
-          },
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Annuler'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (nameController.text.trim().isNotEmpty) {
-                ref.read(mediaProviderRef).addMediaItem(
-                  name: nameController.text.trim(),
-                  type: type,
-                  duration: duration,
-                  transition: transition,
-                );
-                Navigator.pop(context);
-              }
-            },
-            child: const Text('Ajouter'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _getTransitionLabel(TransitionType type) {
-    switch (type) {
-      case TransitionType.none: return 'Aucune';
-      case TransitionType.fade: return 'Fondu';
-      case TransitionType.slide: return 'Glissière';
-      case TransitionType.zoom: return 'Zoom';
-    }
+  void _showAddMediaDialog(
+    BuildContext context,
+    WidgetRef ref,
+    MediaType type,
+  ) {
+    ref.read(mediaProviderRef).addMediaItem(type: type);
   }
 }
 
@@ -246,7 +161,10 @@ class _MediaCard extends ConsumerWidget {
                     ),
                     Text(
                       '${media.duration}s - ${DateFormat('dd/MM').format(media.createdAt)}',
-                      style: const TextStyle(color: Colors.white70, fontSize: 12),
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12,
+                      ),
                     ),
                   ],
                 ),
@@ -259,7 +177,11 @@ class _MediaCard extends ConsumerWidget {
                 backgroundColor: Colors.black26,
                 radius: 18,
                 child: IconButton(
-                  icon: const Icon(Icons.more_vert, size: 18, color: Colors.white),
+                  icon: const Icon(
+                    Icons.more_vert,
+                    size: 18,
+                    color: Colors.white,
+                  ),
                   onPressed: () => _showMediaOptions(context, ref),
                 ),
               ),
@@ -319,7 +241,9 @@ class _MediaCard extends ConsumerWidget {
             Text('Type: ${media.type == MediaType.image ? "Image" : "Vidéo"}'),
             Text('Durée: ${media.duration}s'),
             Text('Chemin: ${media.filePath}'),
-            Text('Créé le: ${DateFormat('dd/MM/yyyy HH:mm').format(media.createdAt)}'),
+            Text(
+              'Créé le: ${DateFormat('dd/MM/yyyy HH:mm').format(media.createdAt)}',
+            ),
           ],
         ),
         actions: [
@@ -339,7 +263,9 @@ class _MediaCard extends ConsumerWidget {
         context: context,
         builder: (context) => const AlertDialog(
           title: Text('Aucun player'),
-          content: Text('Veuillez d\'abord ajouter un player dans l\'onglet Players.'),
+          content: Text(
+            'Veuillez d\'abord ajouter un player dans l\'onglet Players.',
+          ),
         ),
       );
       return;
@@ -353,21 +279,34 @@ class _MediaCard extends ConsumerWidget {
             title: const Text('Envoyer le média'),
             content: DropdownButtonFormField<Player>(
               value: selectedPlayer,
-              items: players.map((p) => DropdownMenuItem(value: p, child: Text(p.name))).toList(),
+              items: players
+                  .map((p) => DropdownMenuItem(value: p, child: Text(p.name)))
+                  .toList(),
               onChanged: (val) => setState(() => selectedPlayer = val),
-              decoration: const InputDecoration(labelText: 'Sélectionner un player'),
+              decoration: const InputDecoration(
+                labelText: 'Sélectionner un player',
+              ),
             ),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(context), child: const Text('Annuler')),
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Annuler'),
+              ),
               ElevatedButton(
                 onPressed: selectedPlayer == null
                     ? null
                     : () async {
                         Navigator.pop(context);
-                        await ref.read(mediaProviderRef).uploadMediaToPlayer(media, selectedPlayer!);
+                        await ref
+                            .read(mediaProviderRef)
+                            .uploadMediaToPlayer(media, selectedPlayer!);
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Média envoyé à ${selectedPlayer!.name}')),
+                            SnackBar(
+                              content: Text(
+                                'Média envoyé à ${selectedPlayer!.name}',
+                              ),
+                            ),
                           );
                         }
                       },
@@ -387,9 +326,15 @@ class _MediaCard extends ConsumerWidget {
         title: const Text('Supprimer ?'),
         content: Text('Voulez-vous vraiment supprimer "${media.name}" ?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Annuler')),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Annuler'),
+          ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
             onPressed: () {
               ref.read(mediaProviderRef).deleteMediaItem(media.id);
               Navigator.pop(context);

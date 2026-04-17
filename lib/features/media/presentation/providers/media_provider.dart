@@ -53,13 +53,7 @@ class MediaProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> addMediaItem({
-    required String name,
-    required MediaType type,
-    int duration = 10,
-    TransitionType transition = TransitionType.fade,
-    int transitionDuration = 500,
-  }) async {
+  Future<void> addMediaItem({required MediaType type}) async {
     _setLoading(true);
     try {
       FilePickerResult? result;
@@ -77,14 +71,22 @@ class MediaProvider extends ChangeNotifier {
       }
 
       if (result != null && result.files.single.path != null) {
+        final filePath = result.files.single.path!;
+        // Extraire le nom du fichier sans extension
+        final fileName = result.files.single.name;
+        final nameWithoutExtension = fileName.contains('.')
+            ? fileName.substring(0, fileName.lastIndexOf('.'))
+            : fileName;
+
         final media = MediaItem(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
-          name: name,
-          filePath: result.files.single.path!,
+          name: nameWithoutExtension,
+          filePath: filePath,
           type: type,
-          duration: duration,
-          transition: transition,
-          transitionDuration: transitionDuration,
+          duration:
+              10, // Valeur par défaut, sera configurée dans la planification
+          transition: TransitionType.fade,
+          transitionDuration: 500,
           createdAt: DateTime.now(),
         );
 
