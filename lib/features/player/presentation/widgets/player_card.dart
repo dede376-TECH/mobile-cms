@@ -130,7 +130,7 @@ class PlayerCard extends ConsumerWidget {
                       decoration: const InputDecoration(
                         labelText: 'Sélectionner un média',
                       ),
-                      value: selectedMediaId,
+                      initialValue: selectedMediaId,
                       items: mediaItems.map((media) {
                         return DropdownMenuItem(
                           value: media.id,
@@ -162,13 +162,15 @@ class PlayerCard extends ConsumerWidget {
                         final mediaName = mediaItems
                             .firstWhere((m) => m.id == selectedMediaId)
                             .name;
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Lecture de "$mediaName" sur ${player.name}',
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Lecture de "$mediaName" sur ${player.name}',
+                              ),
                             ),
-                          ),
-                        );
+                          );
+                        }
                       },
                 child: const Text('Lire'),
               ),
@@ -200,7 +202,7 @@ class PlayerCard extends ConsumerWidget {
                   decoration: const InputDecoration(
                     labelText: 'Sélectionner une planification',
                   ),
-                  value: selectedSchedule,
+                  initialValue: selectedSchedule,
                   items: schedules.map((schedule) {
                     return DropdownMenuItem(
                       value: schedule,
@@ -228,13 +230,15 @@ class PlayerCard extends ConsumerWidget {
                         await ref.read(playerProviderRef).syncPlayer(player, [
                           selectedSchedule!,
                         ]);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Planification ${selectedSchedule!.name} synchronisée avec ${player.name}',
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Planification ${selectedSchedule!.name} synchronisée avec ${player.name}',
+                              ),
                             ),
-                          ),
-                        );
+                          );
+                        }
                       },
                 child: const Text('Synchroniser'),
               ),

@@ -52,19 +52,20 @@ class HiveScheduleRepository implements IScheduleRepository {
   @override
   List<Schedule> getByPlayerId(String playerId) {
     if (!_initialized) return [];
-    return _box?.values
-        .where((s) => s.playerId == playerId)
-        .toList() ??
-        [];
+    return _box?.values.where((s) => s.playerId == playerId).toList() ?? [];
   }
 
   @override
   List<Schedule> getActiveByPlayerId(String playerId) {
     if (!_initialized) return [];
     return _box?.values
-        .where((s) => s.playerId == playerId && s.isCurrentlyActive())
-        .toList() ??
+            .where((s) => s.playerId == playerId && s.isCurrentlyActive())
+            .toList() ??
         [];
+  }
+
+  Future<void> init() async {
+    await _ensureInitialized();
   }
 
   Future<void> close() async {

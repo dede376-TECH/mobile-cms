@@ -10,7 +10,6 @@ import '../../../../core/di/injection_container.dart';
 class ScheduleProvider extends ChangeNotifier {
   // Dependencies (injected via constructor - DIP)
   final IScheduleRepository _repository;
-  final IScheduleSender? _scheduleSender;
 
   // State
   List<Schedule> _schedules = [];
@@ -26,8 +25,7 @@ class ScheduleProvider extends ChangeNotifier {
   ScheduleProvider({
     required IScheduleRepository repository,
     IScheduleSender? scheduleSender,
-  }) : _repository = repository,
-       _scheduleSender = scheduleSender {
+  }) : _repository = repository {
     _initialize();
   }
 
@@ -90,8 +88,5 @@ class ScheduleProvider extends ChangeNotifier {
 }
 
 final scheduleProviderRef = ChangeNotifierProvider((ref) {
-  return ScheduleProvider(
-    repository: sl<IScheduleRepository>(),
-    scheduleSender: sl<IScheduleSender>(),
-  );
+  return ScheduleProvider(repository: sl<IScheduleRepository>());
 });

@@ -98,7 +98,7 @@ class _CreateScheduleScreenState extends ConsumerState<CreateScheduleScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 4),
         ],
       ),
       child: Column(
@@ -187,9 +187,9 @@ class _CreateScheduleScreenState extends ConsumerState<CreateScheduleScreen> {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
@@ -531,7 +531,7 @@ class _CreateScheduleScreenState extends ConsumerState<CreateScheduleScreen> {
                         boxShadow: _isDeviceMode
                             ? [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
+                                  color: Colors.black.withValues(alpha: 0.1),
                                   blurRadius: 4,
                                 ),
                               ]
@@ -566,7 +566,7 @@ class _CreateScheduleScreenState extends ConsumerState<CreateScheduleScreen> {
                         boxShadow: !_isDeviceMode
                             ? [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
+                                  color: Colors.black.withValues(alpha: 0.1),
                                   blurRadius: 4,
                                 ),
                               ]
@@ -927,7 +927,7 @@ class _CreateScheduleScreenState extends ConsumerState<CreateScheduleScreen> {
                         ? Image.file(
                             File(mediaItem.filePath),
                             fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) =>
+                            errorBuilder: (context, error, stackTrace) =>
                                 const Icon(Icons.image),
                           )
                         : const Icon(Icons.videocam, size: 30),
@@ -979,7 +979,7 @@ class _CreateScheduleScreenState extends ConsumerState<CreateScheduleScreen> {
                 Expanded(
                   flex: 2,
                   child: DropdownButtonFormField<TransitionType>(
-                    value: item.transition,
+                    initialValue: item.transition,
                     decoration: const InputDecoration(
                       labelText: 'Transition',
                       isDense: true,
@@ -1225,7 +1225,7 @@ class _CreateScheduleScreenState extends ConsumerState<CreateScheduleScreen> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 4,
             offset: const Offset(0, -2),
           ),
@@ -1337,7 +1337,7 @@ class _CreateScheduleScreenState extends ConsumerState<CreateScheduleScreen> {
 
     for (final playerId in targetPlayerIds) {
       final schedule = Schedule(
-        id: DateTime.now().millisecondsSinceEpoch.toString() + '_$playerId',
+        id: '${DateTime.now().millisecondsSinceEpoch}_$playerId',
         name: _nameController.text.trim(),
         playerId: playerId,
         startDate: _startDate!,
@@ -1366,7 +1366,9 @@ class _CreateScheduleScreenState extends ConsumerState<CreateScheduleScreen> {
     });
 
     Future.delayed(const Duration(seconds: 1), () {
-      Navigator.pop(context);
+      if (mounted) {
+        Navigator.pop(context);
+      }
     });
   }
 }

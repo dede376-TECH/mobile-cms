@@ -13,13 +13,12 @@ class PlayerDetailSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final playerProvider = ref.watch(playerProviderRef);
     final schedules = ref
         .watch(scheduleProviderRef)
         .schedules; // Assuming scheduleProviderRef exists
 
     return DraggableScrollableSheet(
-      initialChildSize: 0.5,
+      initialChildSize: 1.5,
       minChildSize: 0.25,
       maxChildSize: 0.9,
       expand: false,
@@ -134,9 +133,11 @@ class PlayerDetailSheet extends ConsumerWidget {
           onTap: () async {
             Navigator.pop(context);
             await ref.read(playerProviderRef).rebootPlayer(player);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Player ${player.name} redémarré')),
-            );
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Player ${player.name} redémarré')),
+              );
+            }
           },
         ),
         ListTile(
@@ -208,13 +209,15 @@ class PlayerDetailSheet extends ConsumerWidget {
                         await ref.read(playerProviderRef).syncPlayer(player, [
                           selectedSchedule!,
                         ]);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Planification ${selectedSchedule!.name} synchronisée avec ${player.name}',
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Planification ${selectedSchedule!.name} synchronisée avec ${player.name}',
+                              ),
                             ),
-                          ),
-                        );
+                          );
+                        }
                       },
                 child: const Text('Synchroniser'),
               ),

@@ -103,12 +103,24 @@ class MediaScreen extends ConsumerWidget {
     );
   }
 
-  void _showAddMediaDialog(
+  Future<void> _showAddMediaDialog(
     BuildContext context,
     WidgetRef ref,
     MediaType type,
-  ) {
-    ref.read(mediaProviderRef).addMediaItem(type: type);
+  ) async {
+    await ref.read(mediaProviderRef).addMediaItem(type: type);
+
+    if (!context.mounted) return;
+
+    final state = ref.read(mediaProviderRef);
+    if (state.error != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erreur: ${state.error}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 }
 
@@ -277,7 +289,7 @@ class _MediaCard extends ConsumerWidget {
           return AlertDialog(
             title: const Text('Envoyer le média'),
             content: DropdownButtonFormField<Player>(
-              value: selectedPlayer,
+              initialValue: selectedPlayer,
               items: players
                   .map((p) => DropdownMenuItem(value: p, child: Text(p.name)))
                   .toList(),

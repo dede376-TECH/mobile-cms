@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
 import '../../domain/models/media_item.dart';
 import '../../domain/interfaces/imedia_repository.dart';
 import '../../../player/domain/models/player.dart';
@@ -56,45 +57,59 @@ class MediaProvider extends ChangeNotifier {
   Future<void> addMediaItem({required MediaType type}) async {
     _setLoading(true);
     try {
-      FilePickerResult? result;
+      final result = await FilePicker.platform.pickFiles(
+        type: type == MediaType.image ? FileType.image : FileType.video,
+        allowMultiple: false,
+        withData: true,
+      );
 
-      if (type == MediaType.image) {
-        result = await FilePicker.platform.pickFiles(
-          type: FileType.image,
-          allowMultiple: false,
-        );
-      } else {
-        result = await FilePicker.platform.pickFiles(
-          type: FileType.video,
-          allowMultiple: false,
-        );
+      if (result == null || result.files.isEmpty) {
+        _error = 'Aucun fichier sélectionné.';
+        return;
       }
 
-      if (result != null && result.files.single.path != null) {
-        final filePath = result.files.single.path!;
-        // Extraire le nom du fichier sans extension
-        final fileName = result.files.single.name;
-        final nameWithoutExtension = fileName.contains('.')
-            ? fileName.substring(0, fileName.lastIndexOf('.'))
-            : fileName;
+      final platformFile = result.files.single;
+      String? filePath = platformFile.path;
 
-        final media = MediaItem(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          name: nameWithoutExtension,
-          filePath: filePath,
-          type: type,
-          duration:
-              10, // Valeur par défaut, sera configurée dans la planification
-          transition: TransitionType.fade,
-          transitionDuration: 500,
-          createdAt: DateTime.now(),
+      // Fallback : si le path est null (certains environnements Windows),
+      // on écrit les bytes dans un fichier temporaire.
+      if (filePath == null && platformFile.bytes != null) {
+        final tempDir = await getTemporaryDirectory();
+        final ext = type == MediaType.image ? 'jpg' : 'mp4';
+        final tempFile = File(
+          '${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}.$ext',
         );
-
-        await _repository.save(media);
-        _mediaItems = _repository.getAll();
-        _error = null;
-        notifyListeners();
+        await tempFile.writeAsBytes(platformFile.bytes!);
+        filePath = tempFile.path;
       }
+
+      if (filePath == null) {
+        _error = 'Impossible de récupérer le fichier sélectionné.';
+        return;
+      }
+
+      // Extraire le nom du fichier sans extension
+      final fileName = platformFile.name;
+      final nameWithoutExtension = fileName.contains('.')
+          ? fileName.substring(0, fileName.lastIndexOf('.'))
+          : fileName;
+
+      final media = MediaItem(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        name: nameWithoutExtension,
+        filePath: filePath,
+        type: type,
+        duration:
+            10, // Valeur par défaut, sera configurée dans la planification
+        transition: TransitionType.fade,
+        transitionDuration: 500,
+        createdAt: DateTime.now(),
+      );
+
+      await _repository.save(media);
+      _mediaItems = _repository.getAll();
+      _error = null;
+      notifyListeners();
     } catch (e) {
       _error = 'Erreur ajout média: $e';
     } finally {

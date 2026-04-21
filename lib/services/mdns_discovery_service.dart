@@ -12,7 +12,6 @@ import 'package:cms_local/core/network/interfaces/communication_interfaces.dart'
 /// - Respecte le principe ISP : séparation de la découverte du reste
 class MdnsDiscoveryService implements IPlayerDiscovery {
   static const String _serviceType = '_cms-player._tcp';
-  static const String _serviceName = 'CMS Player';
 
   final MDnsClient _client = MDnsClient();
   bool _initialized = false;

@@ -13,7 +13,6 @@ import 'package:cms_local/features/player/domain/models/player.dart';
 class WebSocketStatusService implements IRealtimeStatusListener {
   WebSocketChannel? _channel;
   final _statusController = StreamController<PlayerStatusUpdate>.broadcast();
-  Player? _connectedPlayer;
   bool _isConnected = false;
 
   @override
@@ -26,8 +25,6 @@ class WebSocketStatusService implements IRealtimeStatusListener {
   Future<void> connectToPlayer(Player player) async {
     // Déconnecte d'abord si déjà connecté
     await disconnect();
-
-    _connectedPlayer = player;
 
     try {
       final wsUrl = 'ws://${player.ipAddress}:${player.port}/api/ws';
@@ -148,8 +145,6 @@ class WebSocketStatusService implements IRealtimeStatusListener {
       }
       _channel = null;
     }
-
-    _connectedPlayer = null;
   }
 
   void dispose() {

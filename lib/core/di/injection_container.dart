@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import '../network/dio_client.dart';
 import '../../services/api_service.dart';
 import '../../services/storage_service.dart';
@@ -28,6 +29,9 @@ import '../../features/media/presentation/providers/media_provider.dart';
 final sl = GetIt.instance;
 
 Future<void> init() async {
+  // Hive doit être initialisé avant d'ouvrir les boxes
+  await Hive.initFlutter();
+
   // Core
   sl.registerLazySingleton(() => Dio());
   sl.registerLazySingleton(() => DioClient(sl()));
@@ -40,13 +44,21 @@ Future<void> init() async {
   sl.registerLazySingleton(() => MdnsDiscoveryService());
   sl.registerLazySingleton(() => WebSocketStatusService());
 
-  // Features - Repositories
+  // Features - Repositories (initialisés eager pour éviter les lectures vides)
   sl.registerLazySingleton<IDashboardRepository>(
     () => DashboardRepositoryImpl(sl()),
   );
-  sl.registerLazySingleton<IPlayerRepository>(() => HivePlayerRepository());
-  sl.registerLazySingleton<IScheduleRepository>(() => HiveScheduleRepository());
-  sl.registerLazySingleton<IMediaRepository>(() => HiveMediaRepository());
+  final playerRepo = HivePlayerRepository();
+  await playerRepo.init();
+  sl.registerLazySingleton<IPlayerRepository>(() => playerRepo);
+
+  final scheduleRepo = HiveScheduleRepository();
+  await scheduleRepo.init();
+  sl.registerLazySingleton<IScheduleRepository>(() => scheduleRepo);
+
+  final mediaRepo = HiveMediaRepository();
+  await mediaRepo.init();
+  sl.registerLazySingleton<IMediaRepository>(() => mediaRepo);
 
   // Features - Data sources (if any, for now only remote for dashboard)
   sl.registerLazySingleton<DashboardRemoteDataSource>(

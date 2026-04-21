@@ -49,6 +49,10 @@ class HiveMediaRepository implements IMediaRepository {
     return _box?.values.toList() ?? [];
   }
 
+  Future<void> init() async {
+    await _ensureInitialized();
+  }
+
   Future<void> close() async {
     await _box?.close();
     _initialized = false;

@@ -11,14 +11,14 @@ class HivePlayerRepository implements IPlayerRepository {
 
   Future<void> _ensureInitialized() async {
     if (_initialized) return;
-    
+
     if (!Hive.isAdapterRegistered(1)) {
       Hive.registerAdapter(PlayerAdapter());
     }
     if (!Hive.isAdapterRegistered(4)) {
       Hive.registerAdapter(PlayerStatusAdapter());
     }
-    
+
     _box ??= await Hive.openBox<Player>('players');
     _initialized = true;
   }
@@ -52,12 +52,13 @@ class HivePlayerRepository implements IPlayerRepository {
     await _ensureInitialized();
     final player = _box!.get(playerId);
     if (player != null) {
-      final updated = player.copyWith(
-        status: status,
-        lastSeen: DateTime.now(),
-      );
+      final updated = player.copyWith(status: status, lastSeen: DateTime.now());
       await _box!.put(playerId, updated);
     }
+  }
+
+  Future<void> init() async {
+    await _ensureInitialized();
   }
 
   Future<void> close() async {
