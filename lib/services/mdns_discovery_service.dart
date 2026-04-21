@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:multicast_dns/multicast_dns.dart';
-import '../features/app_core_ui/domain/interfaces/icommunication_interfaces.dart';
+import 'package:cms_local/core/network/interfaces/communication_interfaces.dart';
 
 /// Service de découverte de players via mDNS (multicast DNS)
 /// Avantages par rapport au scan subnet :

@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../app_core_ui/domain/interfaces/app_interfaces.dart';
+import 'package:cms_local/core/network/interfaces/communication_interfaces.dart';
+import '../../domain/models/schedule.dart';
+import '../../domain/interfaces/ischedule_repository.dart';
 import '../../../../core/di/injection_container.dart';
 
 /// Provider pour la gestion des planifications

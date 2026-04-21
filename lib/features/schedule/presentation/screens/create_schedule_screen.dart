@@ -1,12 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../app_core_ui/domain/models/app_models.dart';
-import '../providers/schedule_provider.dart';
-import '../../../player/presentation/providers/player_provider.dart';
-import '../../../media/presentation/providers/media_provider.dart';
+import '../../../../core/providers/global_providers.dart';
 import '../../domain/models/schedule.dart';
 import '../../../media/domain/models/media_item.dart';
+import '../../../player/domain/models/player.dart';
 
 class CreateScheduleScreen extends ConsumerStatefulWidget {
   final Player? preselectedPlayer;

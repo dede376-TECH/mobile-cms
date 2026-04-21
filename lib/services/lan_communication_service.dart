@@ -2,15 +2,21 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-import '../features/app_core_ui/domain/models/app_models.dart';
+import 'package:cms_local/features/player/domain/models/player.dart';
+import 'package:cms_local/features/media/domain/models/media_item.dart';
+import 'package:cms_local/features/schedule/domain/models/schedule.dart';
+import 'package:cms_local/core/network/interfaces/communication_interfaces.dart';
 
 class LanCommunicationService {
-  static final LanCommunicationService _instance = LanCommunicationService._internal();
+  static final LanCommunicationService _instance =
+      LanCommunicationService._internal();
   factory LanCommunicationService() => _instance;
   LanCommunicationService._internal();
 
-  final _playerStatusController = StreamController<PlayerStatusUpdate>.broadcast();
-  Stream<PlayerStatusUpdate> get playerStatusStream => _playerStatusController.stream;
+  final _playerStatusController =
+      StreamController<PlayerStatusUpdate>.broadcast();
+  Stream<PlayerStatusUpdate> get playerStatusStream =>
+      _playerStatusController.stream;
 
   final Map<String, HttpClient> _clients = {};
   final Duration _timeout = const Duration(seconds: 5);
@@ -67,22 +73,24 @@ class LanCommunicationService {
     }
   }
 
-  Future<bool> sendMedia(Player player, MediaItem media, List<int> fileBytes) async {
+  Future<bool> sendMedia(
+    Player player,
+    MediaItem media,
+    List<int> fileBytes,
+  ) async {
     try {
       final uri = Uri.parse('${player.baseUrl}/api/media');
       final request = http.MultipartRequest('POST', uri);
 
       request.files.add(
-        http.MultipartFile.fromBytes(
-          'file',
-          fileBytes,
-          filename: media.name,
-        ),
+        http.MultipartFile.fromBytes('file', fileBytes, filename: media.name),
       );
 
       request.fields['mediaData'] = jsonEncode(media.toJson());
 
-      final streamedResponse = await request.send().timeout(const Duration(seconds: 30));
+      final streamedResponse = await request.send().timeout(
+        const Duration(seconds: 30),
+      );
       final response = await http.Response.fromStream(streamedResponse);
 
       return response.statusCode == 200 || response.statusCode == 201;
@@ -198,11 +206,13 @@ class LanCommunicationService {
 
     for (int i = 1; i < 255; i++) {
       final ip = '$subnet.$i';
-      futures.add(_checkPlayerAtIp(ip).then((info) {
-        if (info != null) {
-          results.add(info);
-        }
-      }));
+      futures.add(
+        _checkPlayerAtIp(ip).then((info) {
+          if (info != null) {
+            results.add(info);
+          }
+        }),
+      );
     }
 
     await Future.wait(futures, eagerError: false);
@@ -238,34 +248,4 @@ class LanCommunicationService {
     }
     _clients.clear();
   }
-}
-
-class PlayerStatusUpdate {
-  final String playerId;
-  final PlayerStatus status;
-  final String? currentMedia;
-  final DateTime timestamp;
-
-  PlayerStatusUpdate({
-    required this.playerId,
-    required this.status,
-    this.currentMedia,
-    required this.timestamp,
-  });
-}
-
-class PlayerDiscoveryInfo {
-  final String id;
-  final String name;
-  final String ipAddress;
-  final int port;
-  final String? version;
-
-  PlayerDiscoveryInfo({
-    required this.id,
-    required this.name,
-    required this.ipAddress,
-    this.port = 8080,
-    this.version,
-  });
 }

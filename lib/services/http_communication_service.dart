@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../features/app_core_ui/domain/interfaces/icommunication_interfaces.dart';
+import 'package:cms_local/core/network/interfaces/communication_interfaces.dart';
+import 'package:cms_local/features/player/domain/models/player.dart';
+import 'package:cms_local/features/media/domain/models/media_item.dart';
+import 'package:cms_local/features/schedule/domain/models/schedule.dart';
 
 /// Service de communication HTTP implémentant les interfaces séparées
 /// Respecte ISP (Interface Segregation Principle) : chaque interface a sa propre implémentation

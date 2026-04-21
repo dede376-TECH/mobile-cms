@@ -1,8 +1,7 @@
 // player_discovery_dialog.dart - Scan LAN
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../app_core_ui/domain/interfaces/icommunication_interfaces.dart';
-import '../../../app_core_ui/domain/models/app_models.dart';
+import 'package:cms_local/core/network/interfaces/communication_interfaces.dart';
 import '../providers/player_provider.dart';
 
 class PlayerDiscoveryDialog extends ConsumerStatefulWidget {

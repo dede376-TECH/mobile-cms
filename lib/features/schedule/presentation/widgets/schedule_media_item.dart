@@ -1,7 +1,8 @@
 // schedule_media_item.dart - Widget ligne média
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../app_core_ui/domain/models/app_models.dart';
+import '../../domain/models/schedule.dart';
+import '../../../media/domain/models/media_item.dart';
 import '../../../media/presentation/providers/media_provider.dart';
 
 class ScheduleMediaItem extends ConsumerWidget {

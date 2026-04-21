@@ -2,11 +2,11 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../app_core_ui/domain/interfaces/app_interfaces.dart';
 import '../../domain/models/media_item.dart';
+import '../../domain/interfaces/imedia_repository.dart';
 import '../../../player/domain/models/player.dart';
 import '../../../../core/di/injection_container.dart';
-import '../../../app_core_ui/domain/interfaces/icommunication_interfaces.dart';
+import 'package:cms_local/core/network/interfaces/communication_interfaces.dart';
 
 /// Provider pour la gestion des médias
 /// Respecte SRP : ne gère QUE les médias

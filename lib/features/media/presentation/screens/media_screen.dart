@@ -3,8 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:io';
 import '../../domain/models/media_item.dart';
-import '../providers/media_provider.dart';
-import '../../../player/presentation/providers/player_provider.dart';
+import '../../../../core/providers/global_providers.dart';
 import '../../../player/domain/models/player.dart';
 
 class MediaScreen extends ConsumerWidget {

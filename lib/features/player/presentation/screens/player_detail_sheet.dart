@@ -1,7 +1,7 @@
 // player_detail_sheet.dart - Toutes les confirmations et détails
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../app_core_ui/domain/models/app_models.dart';
+import '../../domain/models/player.dart';
 import '../providers/player_provider.dart';
 import '../../../schedule/presentation/providers/schedule_provider.dart';
 import '../../../schedule/domain/models/schedule.dart'; // Import Schedule model

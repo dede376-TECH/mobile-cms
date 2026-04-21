@@ -16,10 +16,14 @@ import '../../features/player/data/repositories/hive_player_repository.dart';
 import '../../features/schedule/data/repositories/hive_schedule_repository.dart';
 import '../../features/media/data/repositories/hive_media_repository.dart';
 
-import '../../features/app_core_ui/domain/interfaces/icommunication_interfaces.dart';
+import '../network/interfaces/communication_interfaces.dart';
 import '../../features/player/domain/interfaces/iplayer_repository.dart';
 import '../../features/schedule/domain/interfaces/ischedule_repository.dart';
 import '../../features/media/domain/interfaces/imedia_repository.dart';
+
+import '../../features/player/presentation/providers/player_provider.dart';
+import '../../features/schedule/presentation/providers/schedule_provider.dart';
+import '../../features/media/presentation/providers/media_provider.dart';
 
 final sl = GetIt.instance;
 
@@ -63,5 +67,25 @@ Future<void> init() async {
   sl.registerLazySingleton<IMediaSender>(() => sl<HttpCommunicationService>());
   sl.registerLazySingleton<IRealtimeStatusListener>(
     () => sl<WebSocketStatusService>(),
+  );
+
+  // Providers
+  sl.registerLazySingleton<PlayerProvider>(
+    () => PlayerProvider(
+      repository: sl(),
+      discovery: sl(),
+      healthChecker: sl(),
+      controller: sl(),
+      scheduleSender: sl(),
+      realtimeStatus: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton<ScheduleProvider>(
+    () => ScheduleProvider(repository: sl(), scheduleSender: sl()),
+  );
+
+  sl.registerLazySingleton<MediaProvider>(
+    () => MediaProvider(repository: sl(), mediaSender: sl()),
   );
 }

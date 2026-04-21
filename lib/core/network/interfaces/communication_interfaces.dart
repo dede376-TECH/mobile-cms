@@ -1,28 +1,54 @@
-import '../models/app_models.dart';
-export '../models/app_models.dart';
+import 'package:cms_local/features/player/domain/models/player.dart';
+import 'package:cms_local/features/media/domain/models/media_item.dart';
+import 'package:cms_local/features/schedule/domain/models/schedule.dart';
 
-/// Interface Segregation Principle : Séparation des responsabilités
-/// Un use case qui n'a besoin que d'envoyer des schedules n'est pas
-/// forcé de dépendre de tout le service de communication
+/// DTO pour la découverte de players sur le réseau
+class PlayerDiscoveryInfo {
+  final String id;
+  final String? name;
+  final String ipAddress;
+  final int port;
+  final String? version;
+
+  PlayerDiscoveryInfo({
+    required this.id,
+    this.name,
+    required this.ipAddress,
+    required this.port,
+    this.version,
+  });
+}
+
+/// DTO pour les mises à jour de statut des players
+class PlayerStatusUpdate {
+  final String playerId;
+  final PlayerStatus status;
+  final DateTime timestamp;
+  final String? currentMedia;
+
+  PlayerStatusUpdate({
+    required this.playerId,
+    required this.status,
+    required this.timestamp,
+    this.currentMedia,
+  });
+}
 
 /// Pour la découverte de players sur le réseau (mDNS ou scan subnet)
 abstract class IPlayerDiscovery {
   /// Découvre les players disponibles sur le réseau local
-  /// Retourne une liste d'informations sur les players trouvés
   Future<List<PlayerDiscoveryInfo>> discoverPlayers();
 }
 
 /// Pour envoyer des planifications aux players
 abstract class IScheduleSender {
   /// Envoie une planification à un player
-  /// Retourne true si l'envoi a réussi
   Future<bool> sendSchedule(Player player, Schedule schedule);
 }
 
 /// Pour envoyer des médias aux players
 abstract class IMediaSender {
   /// Envoie un média à un player
-  /// Retourne true si l'envoi a réussi
   Future<bool> sendMedia(Player player, MediaItem media, List<int> fileBytes);
 
   /// Supprime un média d'un player

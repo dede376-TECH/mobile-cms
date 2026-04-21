@@ -1,7 +1,7 @@
 // schedules_screen.dart - Scaffold + liste des planifications
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/schedule_provider.dart';
+import '../../../../core/providers/global_providers.dart';
 import '../widgets/schedule_card.dart';
 import 'create_schedule_screen.dart';
 

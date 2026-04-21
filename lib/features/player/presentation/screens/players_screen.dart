@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/player_provider.dart';
+import '../../../../core/providers/global_providers.dart';
 import '../widgets/player_card.dart';
 import 'add_player_dialog.dart';
 import 'player_discovery_dialog.dart';

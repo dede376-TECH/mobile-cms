@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../app_core_ui/domain/interfaces/icommunication_interfaces.dart';
+import 'package:cms_local/core/network/interfaces/communication_interfaces.dart';
 import '../../domain/interfaces/iplayer_repository.dart';
+import '../../domain/models/player.dart';
+import '../../../schedule/domain/models/schedule.dart';
 import '../../../../core/di/injection_container.dart';
 
 /// Provider pour la gestion des players
@@ -194,6 +196,21 @@ class PlayerProvider extends ChangeNotifier {
       _error = null;
     } catch (e) {
       _error = 'Erreur synchronisation player: $e';
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> playMedia(Player player, String mediaId) async {
+    _setLoading(true);
+    try {
+      final success = await _controller.play(player, mediaId);
+      if (!success) {
+        throw Exception('Échec de la lecture du média.');
+      }
+      _error = null;
+    } catch (e) {
+      _error = 'Erreur lecture média: $e';
     } finally {
       _setLoading(false);
     }

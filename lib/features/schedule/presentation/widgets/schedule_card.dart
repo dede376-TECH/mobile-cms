@@ -2,9 +2,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../app_core_ui/domain/models/app_models.dart';
+import '../../domain/models/schedule.dart';
 import '../providers/schedule_provider.dart';
 import '../../../player/presentation/providers/player_provider.dart';
+import '../../../player/domain/models/player.dart';
 import 'schedule_media_item.dart';
 
 class ScheduleCard extends ConsumerWidget {

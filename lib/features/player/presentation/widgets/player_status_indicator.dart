@@ -1,6 +1,6 @@
 // player_status_indicator.dart - Badge statut (réutilisable)
 import 'package:flutter/material.dart';
-import '../../../app_core_ui/domain/models/app_models.dart';
+import '../../domain/models/player.dart';
 
 /// Badge circulaire indiquant le statut d'un player.
 class PlayerStatusIndicator extends StatelessWidget {

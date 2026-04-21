@@ -1,6 +1,7 @@
 // media_selection_dialog.dart - Sélection et édition des médias
 import 'package:flutter/material.dart';
-import '../../../app_core_ui/domain/models/app_models.dart';
+import '../../../media/domain/models/media_item.dart';
+import '../../domain/models/schedule.dart';
 
 class MediaSelectionDialog {
   /// Ouvre le dialog de sélection/désélection des médias.

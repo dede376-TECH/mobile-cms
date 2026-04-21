@@ -2,11 +2,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../app_core_ui/domain/models/app_models.dart';
-import '../providers/player_provider.dart';
+import '../../domain/models/player.dart';
+import '../../../schedule/domain/models/schedule.dart';
+import '../../../../core/providers/global_providers.dart';
 import 'player_status_indicator.dart';
 import '../screens/player_detail_sheet.dart';
-import '../../../schedule/presentation/providers/schedule_provider.dart'; // Import schedule provider
 
 class PlayerCard extends ConsumerWidget {
   final Player player;
@@ -23,6 +23,13 @@ class PlayerCard extends ConsumerWidget {
         endActionPane: ActionPane(
           motion: const ScrollMotion(),
           children: [
+            SlidableAction(
+              onPressed: (_) => _showPlayMediaDialog(context, ref, player),
+              backgroundColor: Colors.green,
+              foregroundColor: Colors.white,
+              icon: Icons.play_arrow,
+              label: 'Play',
+            ),
             SlidableAction(
               onPressed: (_) =>
                   _showSyncScheduleDialog(context, ref, player, schedules),
@@ -95,6 +102,81 @@ class PlayerCard extends ConsumerWidget {
     if (diff.inHours < 1) return 'il y a ${diff.inMinutes} min';
     if (diff.inDays < 1) return 'il y a ${diff.inHours}h';
     return 'il y a ${diff.inDays}j';
+  }
+
+  void _showPlayMediaDialog(
+    BuildContext context,
+    WidgetRef ref,
+    Player player,
+  ) {
+    final mediaItems = ref.watch(mediaProviderRef).mediaItems;
+    String? selectedMediaId;
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: Text('Lire un média sur ${player.name}'),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (mediaItems.isEmpty)
+                    const Text('Aucun média disponible')
+                  else
+                    DropdownButtonFormField<String>(
+                      decoration: const InputDecoration(
+                        labelText: 'Sélectionner un média',
+                      ),
+                      value: selectedMediaId,
+                      items: mediaItems.map((media) {
+                        return DropdownMenuItem(
+                          value: media.id,
+                          child: Text(media.name),
+                        );
+                      }).toList(),
+                      onChanged: (mediaId) {
+                        setState(() {
+                          selectedMediaId = mediaId;
+                        });
+                      },
+                    ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Annuler'),
+              ),
+              ElevatedButton(
+                onPressed: selectedMediaId == null || mediaItems.isEmpty
+                    ? null
+                    : () async {
+                        Navigator.pop(context);
+                        await ref
+                            .read(playerProviderRef)
+                            .playMedia(player, selectedMediaId!);
+                        final mediaName = mediaItems
+                            .firstWhere((m) => m.id == selectedMediaId)
+                            .name;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Lecture de "$mediaName" sur ${player.name}',
+                            ),
+                          ),
+                        );
+                      },
+                child: const Text('Lire'),
+              ),
+            ],
+          );
+        },
+      ),
+    );
   }
 
   void _showSyncScheduleDialog(

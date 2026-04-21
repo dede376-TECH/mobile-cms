@@ -2,7 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/status.dart' as status;
-import '../features/app_core_ui/domain/interfaces/icommunication_interfaces.dart';
+import 'package:cms_local/core/network/interfaces/communication_interfaces.dart';
+import 'package:cms_local/features/player/domain/models/player.dart';
 
 /// Service WebSocket pour le statut temps réel des players
 /// Remplace le polling HTTP toutes les 30 secondes par une connexion persistante
